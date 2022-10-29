@@ -108,7 +108,7 @@ class Board:
 					self.selected_piece = clicked_square.occupying_piece
 
 		elif self.selected_piece.move(self, clicked_square):
-			# TODO modify logic for chain reactions
+			# TODO modify logic for chain reactions  
 			self.turn = 'white' if self.turn == 'black' else 'black'
 
 		elif clicked_square.occupying_piece is not None:
