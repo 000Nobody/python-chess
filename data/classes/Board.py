@@ -106,8 +106,9 @@ class Board:
 			if clicked_square.occupying_piece is not None:
 				if clicked_square.occupying_piece.color == self.turn:
 					self.selected_piece = clicked_square.occupying_piece
-
+		#validation will need to change for frozen squares
 		elif self.selected_piece.move(self, clicked_square):
+			#to do this is where chain reactions will be added
 			self.turn = 'white' if self.turn == 'black' else 'black'
 
 		elif clicked_square.occupying_piece is not None:
