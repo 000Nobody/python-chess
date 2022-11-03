@@ -1,4 +1,3 @@
-from outcome import capture
 import pygame
 
 class Piece:
