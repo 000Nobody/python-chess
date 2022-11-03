@@ -7,6 +7,10 @@ class Piece:
 		self.y = pos[1]
 		self.color = color
 		self.has_moved = False
+		self.chain_grant = {
+			"B": 4, "N": 4, "R": 4,
+			"Q": 5
+		}
 
 	def move(self, board, square, force=False):
 
@@ -20,10 +24,16 @@ class Piece:
 			prev_square.occupying_piece = None
 			# default capture tracking to nothing 
 			piece_capture = False
+			# default max chain difference to 0
+			max_chain = 0
 			# check if there the square was previously occupied
 			if square.occupying_piece is not None:
 				# set tracking var to yes a piece has been captured
 				piece_capture = True
+				# check whether player boosted their max chain
+				if square.occupying_piece.notation in self.chain_grant:
+					# calculate change required to grant new maximum chain
+					max_chain = self.chain_grant[square.occupying_piece.notation] - board.max_chain
 			square.occupying_piece = self
 			board.selected_piece = None
 			self.has_moved = True
@@ -47,10 +57,10 @@ class Piece:
 					rook = board.get_piece_from_pos((7, self.y))
 					rook.move(board, board.get_square_from_pos((5, self.y)), force=True)
 
-			return True, piece_capture
+			return True, piece_capture, max_chain
 		else:
 			board.selected_piece = None
-			return False, False
+			return False, False, 0
 
 
 	def get_moves(self, board):
