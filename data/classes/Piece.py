@@ -1,3 +1,4 @@
+from outcome import capture
 import pygame
 
 class Piece:
@@ -18,6 +19,12 @@ class Piece:
 			self.pos, self.x, self.y = square.pos, square.x, square.y
 
 			prev_square.occupying_piece = None
+			# default capture tracking to nothing 
+			piece_capture = False
+			# check if there the square was previously occupied
+			if square.occupying_piece is not None:
+				# set tracking var to yes a piece has been captured
+				piece_capture = True
 			square.occupying_piece = self
 			board.selected_piece = None
 			self.has_moved = True
@@ -41,10 +48,10 @@ class Piece:
 					rook = board.get_piece_from_pos((7, self.y))
 					rook.move(board, board.get_square_from_pos((5, self.y)), force=True)
 
-			return True
+			return True, piece_capture
 		else:
 			board.selected_piece = None
-			return False
+			return False, False
 
 
 	def get_moves(self, board):
