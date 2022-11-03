@@ -107,13 +107,15 @@ class Board:
 				if clicked_square.occupying_piece.color == self.turn:
 					self.selected_piece = clicked_square.occupying_piece
 
-		elif self.selected_piece.move(self, clicked_square):
-			# TODO modify logic for chain reactions  
-			self.turn = 'white' if self.turn == 'black' else 'black'
+		else:
+			move, piece_capture = self.selected_piece.move(self, clicked_square)
+			if move:
+				if not piece_capture:
+					self.turn = 'white' if self.turn == 'black' else 'black'
 
-		elif clicked_square.occupying_piece is not None:
-			if clicked_square.occupying_piece.color == self.turn:
-				self.selected_piece = clicked_square.occupying_piece
+			elif clicked_square.occupying_piece is not None:
+				if clicked_square.occupying_piece.color == self.turn:
+					self.selected_piece = clicked_square.occupying_piece
 
 
 	def is_in_check(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
