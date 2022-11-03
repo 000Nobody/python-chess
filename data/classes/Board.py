@@ -110,6 +110,7 @@ class Board:
 		else:
 			move, piece_capture = self.selected_piece.move(self, clicked_square)
 			if move:
+				# don't change turn if the player captured a piece
 				if not piece_capture:
 					self.turn = 'white' if self.turn == 'black' else 'black'
 
