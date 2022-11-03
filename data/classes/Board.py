@@ -108,7 +108,6 @@ class Board:
 			if clicked_square.occupying_piece is not None:
 				if clicked_square.occupying_piece.color == self.turn:
 					self.selected_piece = clicked_square.occupying_piece
-
 		else:
 			move, piece_capture, chain_diff = self.selected_piece.move(self, clicked_square)
 			# depending on what the player captured change the max chain
