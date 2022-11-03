@@ -16,6 +16,8 @@ class Board:
 		self.square_height = height // 8
 		self.selected_piece = None
 		self.turn = 'white'
+		self.chain = 1
+		self.max_chain = 3
 
 		self.config = [
 			['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
@@ -106,14 +108,24 @@ class Board:
 			if clicked_square.occupying_piece is not None:
 				if clicked_square.occupying_piece.color == self.turn:
 					self.selected_piece = clicked_square.occupying_piece
-		#validation will need to change for frozen squares
-		elif self.selected_piece.move(self, clicked_square):
-			# TODO modify logic for chain reactions  
-			self.turn = 'white' if self.turn == 'black' else 'black'
+		else:
+			move, piece_capture, chain_diff = self.selected_piece.move(self, clicked_square)
+			# depending on what the player captured change the max chain
+			self.max_chain += chain_diff
+			if move:
+				# don't change turn if the player captured a piece or the player has reached the maximum chain
+				if not piece_capture or not self.chain < self.max_chain:
+					# reset chain variables to default
+					self.chain = 1
+					self.max_chain = 3
+					self.turn = 'white' if self.turn == 'black' else 'black'
+				else:
+					# update chain
+					self.chain += 1
 
-		elif clicked_square.occupying_piece is not None:
-			if clicked_square.occupying_piece.color == self.turn:
-				self.selected_piece = clicked_square.occupying_piece
+			elif clicked_square.occupying_piece is not None:
+				if clicked_square.occupying_piece.color == self.turn:
+					self.selected_piece = clicked_square.occupying_piece
 
 
 	def is_in_check(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
