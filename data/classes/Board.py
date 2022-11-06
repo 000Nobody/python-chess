@@ -18,6 +18,7 @@ class Board:
 		self.turn = 'white'
 		self.chain = 1
 		self.max_chain = 3
+		self.chain_piece_pos = None
 
 		self.config = [
 			['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
@@ -106,8 +107,9 @@ class Board:
 
 		if self.selected_piece is None:
 			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == self.turn:
-					self.selected_piece = clicked_square.occupying_piece
+				if clicked_square.occupying_piece.color == self.turn :
+					if (self.chain == 1) or (self.chain > 1 and clicked_square == self.chain_piece_pos) : 
+						self.selected_piece = clicked_square.occupying_piece
 		else:
 			move, piece_capture, chain_diff = self.selected_piece.move(self, clicked_square)
 			# depending on what the player captured change the max chain
@@ -118,10 +120,12 @@ class Board:
 					# reset chain variables to default
 					self.chain = 1
 					self.max_chain = 3
-					self.turn = 'white' if self.turn == 'black' else 'black'
+					self.turn = 'white' if self.turn == 'black' else 'black' 
+					self.chain_piece_pos = None
 				else:
 					# update chain
 					self.chain += 1
+					self.chain_piece_pos = clicked_square
 
 			elif clicked_square.occupying_piece is not None:
 				if clicked_square.occupying_piece.color == self.turn:

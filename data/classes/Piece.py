@@ -57,7 +57,7 @@ class Piece:
 					rook = board.get_piece_from_pos((7, self.y))
 					rook.move(board, board.get_square_from_pos((5, self.y)), force=True)
 
-			return True, piece_capture, max_chain
+			return True, piece_capture, max_chain, 
 		else:
 			board.selected_piece = None
 			return False, False, 0
