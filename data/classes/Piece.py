@@ -16,6 +16,7 @@ class Piece:
 
 		for i in board.squares:
 			i.highlight = False
+			i.chain = False
 
 		if square in self.get_valid_moves(board) or force:
 			prev_square = board.get_square_from_pos(self.pos)
