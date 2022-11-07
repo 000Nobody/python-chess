@@ -14,9 +14,13 @@ class Square:
 		self.color = 'light' if (x + y) % 2 == 0 else 'dark'
 		self.draw_color = (241, 211, 170) if self.color == 'light' else (180, 126, 82)
 		self.highlight_color = (150, 255, 100) if self.color == 'light' else (50, 220, 0)
+		self.frozen_colours = [(132, 250, 250), (157, 250, 250), (188, 245, 245)] if self.color == "light" else \
+							  [(92, 210, 210), (117, 210, 210), (148, 205, 205)]
 		self.occupying_piece = None
 		self.coord = self.get_coord()
 		self.highlight = False
+		self.frozen = False
+		self.freeze_level = None
 
 		self.rect = pygame.Rect(
 			self.abs_x,
@@ -34,6 +38,8 @@ class Square:
 	def draw(self, display):
 		if self.highlight:
 			pygame.draw.rect(display, self.highlight_color, self.rect)
+		elif self.frozen:
+			pygame.draw.rect(display, self.frozen_colours[self.freeze_level], self.rect)		
 		else:
 			pygame.draw.rect(display, self.draw_color, self.rect)
 

@@ -1,3 +1,4 @@
+from random import randint
 import pygame
 
 from data.classes.Square import Square
@@ -18,6 +19,10 @@ class Board:
 		self.turn = 'white'
 		self.chain = 1
 		self.max_chain = 3
+		self.freeze_in = 0
+		self.freeze = False
+		self.frozen_origin = None
+		self.freeze_prob = 2
 
 		self.config = [
 			['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
@@ -48,6 +53,11 @@ class Board:
 				)
 
 		return output
+	
+	def generate_frozen_origin(self) -> tuple:
+		# define random top left origin point
+		x, y = randint(0, 5), randint(0, 5)
+		return (x, y)
 
 
 	def setup_board(self):
@@ -106,7 +116,7 @@ class Board:
 
 		if self.selected_piece is None:
 			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == self.turn:
+				if clicked_square.occupying_piece.color == self.turn:	
 					self.selected_piece = clicked_square.occupying_piece
 		else:
 			move, piece_capture, chain_diff = self.selected_piece.move(self, clicked_square)
@@ -122,6 +132,18 @@ class Board:
 				else:
 					# update chain
 					self.chain += 1
+				# check if frozen data is already defined
+				if self.freeze:
+					if self.freeze_in == 0:
+						self.freeze = False
+					else:
+						self.freeze_in -= 1
+								
+				# check if an event of probability 1/self.freeze_prob is True
+				elif randint(1, self.freeze_prob) == 1:
+					self.freeze = True
+					self.freeze_in = 2
+					self.frozen_origin = self.generate_frozen_origin()
 
 			elif clicked_square.occupying_piece is not None:
 				if clicked_square.occupying_piece.color == self.turn:
@@ -200,6 +222,18 @@ class Board:
 
 
 	def draw(self, display):
+		
+		for square in self.squares:
+			square.frozen = False
+
+		if self.freeze:
+			x, y = self.frozen_origin
+			# modify every affected square
+			for i in range(3):
+				for j in range(3):
+					square = self.get_square_from_pos((x+i, y+j))
+					square.freeze_level = self.freeze_in
+					square.frozen = True
 		if self.selected_piece is not None:
 			self.get_square_from_pos(self.selected_piece.pos).highlight = True
 			for square in self.selected_piece.get_valid_moves(self):
