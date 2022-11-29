@@ -58,6 +58,7 @@ class Board:
 	def generate_frozen_origin(self) -> tuple:
 		# define random top left origin point
 		x, y = randint(0, 5), randint(0, 5)
+		
 		return (x, y)
 
 
@@ -115,27 +116,30 @@ class Board:
 		y = my // self.square_height
 		clicked_square = self.get_square_from_pos((x, y))
 
-		if self.selected_piece is None:
-			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == self.turn :
-					if (self.chain == 1) or (self.chain > 1 and clicked_square == self.chain_piece_square) : 
-						self.selected_piece = clicked_square.occupying_piece
-		else:
+		if self.selected_piece is None:			
+			if clicked_square.occupying_piece is not None:				
+				if clicked_square.occupying_piece.color == self.turn :					
+					if not clicked_square.frozen:						
+						if (self.chain == 1) or (self.chain > 1 and clicked_square == self.chain_piece_square) : 
+
+							self.selected_piece = clicked_square.occupying_piece
+		else:			
 			move, piece_capture, chain_diff = self.selected_piece.move(self, clicked_square)
 			# depending on what the player captured change the max chain
 			self.max_chain += chain_diff
 			if move:
 				# don't change turn if the player captured a piece or the player has reached the maximum chain
-				if not piece_capture or not self.chain < self.max_chain:
+				if piece_capture:
+					# update chain
+					self.chain += 1
+					self.chain_piece_square = clicked_square
+				if not piece_capture or not self.chain < self.max_chain or self.chain_piece_square.frozen :
 					# reset chain variables to default
 					self.chain = 1
 					self.max_chain = 3
 					self.turn = 'white' if self.turn == 'black' else 'black' 
 					self.chain_piece_square = None
-				else:
-					# update chain
-					self.chain += 1
-					self.chain_piece_square = clicked_square
+		
 				# check if frozen data is already defined
 				if self.freeze:
 					if self.freeze_in == 0:
@@ -145,13 +149,15 @@ class Board:
 								
 				# check if an event of probability 1/self.freeze_prob is True
 				elif randint(1, self.freeze_prob) == 1:
+					
 					self.freeze = True
 					self.freeze_in = 2
 					self.frozen_origin = self.generate_frozen_origin()
 
 			elif clicked_square.occupying_piece is not None:
 				if clicked_square.occupying_piece.color == self.turn:
-					self.selected_piece = clicked_square.occupying_piece
+					if not clicked_square.frozen:
+						self.selected_piece = clicked_square.occupying_piece
 
 
 	def is_in_check(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
